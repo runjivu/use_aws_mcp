@@ -16,7 +16,7 @@ A standalone Model Context Protocol (MCP) server that provides AWS CLI functiona
 
 ### Prerequisites
 
-- Rust (1.70 or later)
+- Rust (1.70 or later), Cargo
 - AWS CLI installed and configured
 - AWS credentials configured (via AWS CLI, environment variables, or IAM roles)
 
@@ -40,12 +40,18 @@ The server communicates via stdin/stdout using JSON-RPC protocol.
 
 ### MCP Client Integration
 
-To use this server with an MCP client, configure it with:
+To use this server with an MCP client, first install it using Cargo:
+
+```sh
+cargo install use_aws
+```
+
+Then configure your MCP client with:
 
 ```json
 {
   "name": "use_aws",
-  "command": "./target/release/use_aws",
+  "command": "use_aws",
   "env": {},
   "timeout": 30000
 }
@@ -215,17 +221,42 @@ The project is structured as follows:
 
 ## Dependencies
 
-- `tokio`: Async runtime
-- `serde`: Serialization/deserialization
-- `eyre`: Error handling
-- `bstr`: Byte string utilities
-- `convert_case`: Case conversion for CLI parameters
-- `tracing`: Logging
-- `crossterm`: Terminal formatting for command descriptions
+If you do not have Cargo (the Rust package manager) installed, you can get it by installing Rust using [rustup](https://rustup.rs/):
+
+```sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Follow the on-screen instructions to complete the installation. After installation, restart your terminal and ensure Cargo is available by running:
+
+```sh
+cargo --version
+```
+
+You should see the installed Cargo version printed.
+
+This project is distributed as a Rust crate. The following dependencies are managed automatically by Cargo:
+
+- `tokio`
+- `serde`
+- `serde_json`
+- `eyre`
+- `bstr`
+- `convert_case`
+- `async-trait`
+- `thiserror`
+- `tracing`
+- `tracing-subscriber`
+- `crossterm`
+
+test/dev dependencies:
+- `tokio-test`
+
+You do not need to install these manually; Cargo will handle them during installation.
 
 ## License
 
-MIT OR Apache-2.0
+MIT, Apache-2.0
 
 ## Contributing
 
@@ -259,4 +290,4 @@ Run with debug logging to see detailed information:
 
 ```bash
 RUST_LOG=use_aws=debug ./target/release/use_aws
-``` 
+```

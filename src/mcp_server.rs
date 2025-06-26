@@ -149,7 +149,7 @@ impl AwsMcpServer {
     async fn handle_tools_list(&self, request: JsonRpcRequest) -> Result<JsonRpcResponse> {
         // Read the tools schema from schema.json at the project root
         let schema_path = std::path::Path::new("schema.json");
-        let tools = match std::fs::read_to_string(schema_path) {
+        let tools_json = match std::fs::read_to_string(schema_path) {
             Ok(contents) => match serde_json::from_str::<serde_json::Value>(&contents) {
                 Ok(json) => json,
                 Err(e) => {
@@ -170,6 +170,24 @@ impl AwsMcpServer {
                 let error = JsonRpcError {
                     code: -32603,
                     message: format!("Failed to read schema.json: {}", e),
+                    data: None,
+                };
+                return Ok(JsonRpcResponse {
+                    jsonrpc: "2.0".to_string(),
+                    id: request.id,
+                    result: None,
+                    error: Some(error),
+                });
+            }
+        };
+
+        // The MCP client expects the result to be { "tools": [...] }
+        let tools = match tools_json.get("tools") {
+            Some(tools) => serde_json::json!({ "tools": tools }),
+            None => {
+                let error = JsonRpcError {
+                    code: -32603,
+                    message: "schema.json does not contain a 'tools' key".to_string(),
                     data: None,
                 };
                 return Ok(JsonRpcResponse {
