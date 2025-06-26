@@ -10,6 +10,7 @@ A standalone Model Context Protocol (MCP) server that provides AWS CLI functiona
 - **Parameter Formatting**: Automatic conversion of parameters to kebab-case for CLI compatibility
 - **Error Handling**: Comprehensive error handling and output formatting
 - **MCP Protocol**: Full Model Context Protocol compliance
+- **Human-Readable Descriptions**: Rich command descriptions using terminal formatting
 
 ## Installation
 
@@ -48,6 +49,30 @@ To use this server with an MCP client, configure it with:
   "env": {},
   "timeout": 30000
 }
+```
+
+### Command Descriptions
+
+The server provides human-readable descriptions of AWS CLI commands. You can see this in action by running the example:
+
+```bash
+cargo run --example description_demo
+```
+
+This will output something like:
+```
+Running aws cli command:
+
+Service name: s3
+Operation name: list-buckets
+Parameters: 
+- max-items: "10"
+- query: "Buckets[].Name"
+Profile name: development
+Region: us-west-2
+Label: List S3 buckets with query
+
+✅ This command is read-only (no acceptance required)
 ```
 
 ## Tool Specification
@@ -170,6 +195,13 @@ cargo build
 RUST_LOG=use_aws=debug cargo run
 ```
 
+### Examples
+
+```bash
+# Run the description demo
+cargo run --example description_demo
+```
+
 ## Architecture
 
 The project is structured as follows:
@@ -179,6 +211,7 @@ The project is structured as follows:
 - `src/use_aws.rs`: Core AWS CLI functionality (replicated from original)
 - `src/mcp_server.rs`: MCP server implementation
 - `src/main.rs`: Binary entry point
+- `examples/description_demo.rs`: Example demonstrating command descriptions
 
 ## Dependencies
 
@@ -188,6 +221,7 @@ The project is structured as follows:
 - `bstr`: Byte string utilities
 - `convert_case`: Case conversion for CLI parameters
 - `tracing`: Logging
+- `crossterm`: Terminal formatting for command descriptions
 
 ## License
 

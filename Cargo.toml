@@ -17,6 +17,7 @@ async-trait = "0.1.87"
 thiserror = "2.0.12"
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "fmt"] }
+crossterm = { version = "0.28.1", features = ["event-stream", "events"] }
 
 [dev-dependencies]
 tokio-test = "0.4"

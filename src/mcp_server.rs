@@ -1,6 +1,4 @@
 use std::io::{BufRead, BufReader, Write};
-use std::sync::Arc;
-use tokio::sync::Mutex;
 use serde::{Deserialize, Serialize};
 
 use crate::error::{McpError, Result};
@@ -149,45 +147,39 @@ impl AwsMcpServer {
     }
 
     async fn handle_tools_list(&self, request: JsonRpcRequest) -> Result<JsonRpcResponse> {
-        let tools = serde_json::json!({
-            "tools": [
-                {
-                    "name": "use_aws",
-                    "description": "Execute AWS CLI commands with proper parameter handling and safety checks",
-                    "inputSchema": {
-                        "type": "object",
-                        "properties": {
-                            "service_name": {
-                                "type": "string",
-                                "description": "AWS service name (e.g., s3, ec2, lambda)"
-                            },
-                            "operation_name": {
-                                "type": "string",
-                                "description": "AWS CLI operation name (e.g., list-buckets, describe-instances)"
-                            },
-                            "parameters": {
-                                "type": "object",
-                                "description": "Optional parameters for the AWS CLI command",
-                                "additionalProperties": true
-                            },
-                            "region": {
-                                "type": "string",
-                                "description": "AWS region (e.g., us-west-2, eu-west-1)"
-                            },
-                            "profile_name": {
-                                "type": "string",
-                                "description": "Optional AWS profile name"
-                            },
-                            "label": {
-                                "type": "string",
-                                "description": "Optional label for the operation"
-                            }
-                        },
-                        "required": ["service_name", "operation_name", "region"]
-                    }
+        // Read the tools schema from schema.json at the project root
+        let schema_path = std::path::Path::new("schema.json");
+        let tools = match std::fs::read_to_string(schema_path) {
+            Ok(contents) => match serde_json::from_str::<serde_json::Value>(&contents) {
+                Ok(json) => json,
+                Err(e) => {
+                    let error = JsonRpcError {
+                        code: -32603,
+                        message: format!("Failed to parse schema.json: {}", e),
+                        data: None,
+                    };
+                    return Ok(JsonRpcResponse {
+                        jsonrpc: "2.0".to_string(),
+                        id: request.id,
+                        result: None,
+                        error: Some(error),
+                    });
                 }
-            ]
-        });
+            },
+            Err(e) => {
+                let error = JsonRpcError {
+                    code: -32603,
+                    message: format!("Failed to read schema.json: {}", e),
+                    data: None,
+                };
+                return Ok(JsonRpcResponse {
+                    jsonrpc: "2.0".to_string(),
+                    id: request.id,
+                    result: None,
+                    error: Some(error),
+                });
+            }
+        };
 
         Ok(JsonRpcResponse {
             jsonrpc: "2.0".to_string(),
@@ -222,16 +214,33 @@ impl AwsMcpServer {
         let use_aws_request: UseAwsRequest = serde_json::from_value(tool_call.arguments)
             .map_err(|e| McpError::Serialization(e))?;
 
-        let use_aws = UseAws::from(use_aws_request);
+        // Generate a human-readable description of the command
+        let use_aws = UseAws::from(use_aws_request.clone());
+        let mut description_output = Vec::new();
+        if let Err(e) = use_aws.queue_description(&mut description_output) {
+            tracing::warn!("Failed to generate command description: {}", e);
+        }
+
         let result = use_aws.invoke().await;
 
         match result {
             Ok(invoke_output) => {
                 let response: UseAwsResponse = invoke_output.into();
+                
+                // Include the description in the response if available
+                let description = if !description_output.is_empty() {
+                    String::from_utf8(description_output).unwrap_or_default()
+                } else {
+                    String::new()
+                };
+
                 let content = serde_json::json!([
                     {
                         "type": "text",
-                        "text": serde_json::to_string(&response).unwrap_or_default()
+                        "text": format!("{}\n\nResult:\n{}", 
+                            description,
+                            serde_json::to_string(&response).unwrap_or_default()
+                        )
                     }
                 ]);
 
@@ -274,12 +283,30 @@ impl AwsMcpServer {
             }
         }
     }
+
+    /// Generate a human-readable description of a tool call
+    pub fn generate_tool_description(&self, tool_call: &ToolCall) -> Result<String> {
+        if tool_call.name != "use_aws" {
+            return Ok(format!("Unknown tool: {}", tool_call.name));
+        }
+
+        let use_aws_request: UseAwsRequest = serde_json::from_value(tool_call.arguments.clone())
+            .map_err(|e| McpError::Serialization(e))?;
+
+        let use_aws = UseAws::from(use_aws_request);
+        let mut output = Vec::new();
+        use_aws.queue_description(&mut output)
+            .map_err(|e| McpError::ToolExecution(e.to_string()))?;
+
+        String::from_utf8(output)
+            .map_err(|e| McpError::Io(std::io::Error::new(std::io::ErrorKind::InvalidData, e)))
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
-struct ToolCall {
-    name: String,
-    arguments: serde_json::Value,
+pub struct ToolCall {
+    pub name: String,
+    pub arguments: serde_json::Value,
 }
 
 impl Default for AwsMcpServer {

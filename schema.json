@@ -1,0 +1,39 @@
+{
+  "tools": [
+    {
+      "name": "use_aws",
+      "description": "Execute AWS CLI commands with proper parameter handling and safety checks",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "service_name": {
+            "type": "string",
+            "description": "AWS service name (e.g., s3, ec2, lambda)"
+          },
+          "operation_name": {
+            "type": "string",
+            "description": "AWS CLI operation name (e.g., list-buckets, describe-instances)"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Optional parameters for the AWS CLI command",
+            "additionalProperties": true
+          },
+          "region": {
+            "type": "string",
+            "description": "AWS region (e.g., us-west-2, eu-west-1)"
+          },
+          "profile_name": {
+            "type": "string",
+            "description": "Optional AWS profile name"
+          },
+          "label": {
+            "type": "string",
+            "description": "Optional label for the operation"
+          }
+        },
+        "required": ["service_name", "operation_name", "region"]
+      }
+    }
+  ]
+} 
