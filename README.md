@@ -1,17 +1,19 @@
 # use_aws MCP Server
 
-amazon-q-cli is great, and it is great because it has use_aws MCP tool to interact with aws API.
-Wouldn't it be greater if this use_aws was portable, and use it across different AI tools, whichever you're currently using?
+amazon-q-cli is great, and it is great because it has `use_aws` MCP tool to interact with aws API. 
 
-A standalone Model Context Protocol (MCP) server that provides AWS CLI functionality through a standardized interface. 
+Wouldn't it be greater if this `use_aws` was portable, and use it across different AI tools, \
+whichever you're currently using? 
+
+`use_aws_mcp` is a standalone Model Context Protocol (MCP) server that provides AWS CLI functionality through a standardized interface. \
 This server replicates the functionality of the `use_aws` tool from the Amazon Q Developer CLI.
 
 ## Demo
 
-- Usage with Avante, MCPHub in nvim
+- Usage with Avante, MCPHub in nvim \
 ![Demo: Avante](https://github.com/runjivu/use_aws_mcp/blob/main/images/demo_avante.png?raw=true)
 
-- Usage with Cursor
+- Usage with Cursor \
 ![Demo: Cursor](https://github.com/runjivu/use_aws_mcp/blob/main/images/demo_cursor.png?raw=true)
 
 ## Features
@@ -29,6 +31,7 @@ This server replicates the functionality of the `use_aws` tool from the Amazon Q
 ### Prerequisites
 
 - Rust (1.70 or later), Cargo
+    - for MacOS and linux, install with `curl https://sh.rustup.rs -sSf | sh`
 - AWS CLI installed and configured
 - AWS credentials configured (via AWS CLI, environment variables, or IAM roles)
 
@@ -41,14 +44,6 @@ cargo build --release
 The binary will be available at `target/release/use_aws`.
 
 ## Usage
-
-### Running the MCP Server
-
-```bash
-./target/release/use_aws_mcp
-```
-
-The server communicates via stdin/stdout using JSON-RPC protocol.
 
 ### MCP Client Integration
 
@@ -73,6 +68,28 @@ Then configure your MCP client with:
   }
 }
 ```
+
+#### important caveat for using MCP client
+
+With q cli, mcp clients are shell process, so credentials env like `AWS_DEFAULT_PROFILE` are automatically transfered to mcp server.
+
+However, non shell mcp clients like cursor cannot take advantage of this, so it is best advised to \
+require mcp clients directly to use specific aws profile.
+
+**User Flow :**
+
+1. set mcp.json above 
+2. set API key, or login to specific profile using `aws sso login`
+3. ask away mcp client aws related questions! and be sure to require it to use specific profile.
+
+
+### Running the MCP Server Locally
+
+```bash
+./target/release/use_aws_mcp
+```
+
+The server communicates via stdin/stdout using JSON-RPC protocol.
 
 ### Command Descriptions
 
