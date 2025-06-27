@@ -1,5 +1,5 @@
-use use_aws::mcp_server::AwsMcpServer;
-use use_aws::error::Result;
+use use_aws_mcp::mcp_server::AwsMcpServer;
+use use_aws_mcp::error::Result;
 
 #[tokio::main]
 async fn main() -> Result<()> {

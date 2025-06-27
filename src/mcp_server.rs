@@ -147,57 +147,45 @@ impl AwsMcpServer {
     }
 
     async fn handle_tools_list(&self, request: JsonRpcRequest) -> Result<JsonRpcResponse> {
-        // Read the tools schema from schema.json at the project root
-        let schema_path = std::path::Path::new("schema.json");
-        let tools_json = match std::fs::read_to_string(schema_path) {
-            Ok(contents) => match serde_json::from_str::<serde_json::Value>(&contents) {
-                Ok(json) => json,
-                Err(e) => {
-                    let error = JsonRpcError {
-                        code: -32603,
-                        message: format!("Failed to parse schema.json: {}", e),
-                        data: None,
-                    };
-                    return Ok(JsonRpcResponse {
-                        jsonrpc: "2.0".to_string(),
-                        id: request.id,
-                        result: None,
-                        error: Some(error),
-                    });
+        let tools = serde_json::json!({
+            "tools": [
+                {
+                    "name": "use_aws",
+                    "description": "Execute AWS CLI commands with proper parameter handling and safety checks",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "service_name": {
+                                "type": "string",
+                                "description": "AWS service name (e.g., s3, ec2, lambda)"
+                            },
+                            "operation_name": {
+                                "type": "string",
+                                "description": "AWS CLI operation name (e.g., list-buckets, describe-instances)"
+                            },
+                            "parameters": {
+                                "type": "object",
+                                "description": "Optional parameters for the AWS CLI command",
+                                "additionalProperties": true
+                            },
+                            "region": {
+                                "type": "string",
+                                "description": "AWS region (e.g., us-west-2, eu-west-1)"
+                            },
+                            "profile_name": {
+                                "type": "string",
+                                "description": "Optional AWS profile name"
+                            },
+                            "label": {
+                                "type": "string",
+                                "description": "Optional label for the operation"
+                            }
+                        },
+                        "required": ["service_name", "operation_name", "region"]
+                    }
                 }
-            },
-            Err(e) => {
-                let error = JsonRpcError {
-                    code: -32603,
-                    message: format!("Failed to read schema.json: {}", e),
-                    data: None,
-                };
-                return Ok(JsonRpcResponse {
-                    jsonrpc: "2.0".to_string(),
-                    id: request.id,
-                    result: None,
-                    error: Some(error),
-                });
-            }
-        };
-
-        // The MCP client expects the result to be { "tools": [...] }
-        let tools = match tools_json.get("tools") {
-            Some(tools) => serde_json::json!({ "tools": tools }),
-            None => {
-                let error = JsonRpcError {
-                    code: -32603,
-                    message: "schema.json does not contain a 'tools' key".to_string(),
-                    data: None,
-                };
-                return Ok(JsonRpcResponse {
-                    jsonrpc: "2.0".to_string(),
-                    id: request.id,
-                    result: None,
-                    error: Some(error),
-                });
-            }
-        };
+            ]
+        });
 
         Ok(JsonRpcResponse {
             jsonrpc: "2.0".to_string(),

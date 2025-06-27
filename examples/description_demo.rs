@@ -1,4 +1,4 @@
-use use_aws::use_aws::UseAws;
+use use_aws_mcp::use_aws::UseAws;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a sample AWS CLI command

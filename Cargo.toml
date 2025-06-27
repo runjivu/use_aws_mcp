@@ -1,8 +1,8 @@
 [package]
-name = "use_aws"
+name = "use_aws_mcp"
 version = "0.1.0"
 edition = "2021"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["haneul choi <romano31415@gmail.com>"]
 description = "MCP server for AWS CLI operations"
 license = "MIT OR Apache-2.0"
 

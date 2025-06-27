@@ -1,6 +1,12 @@
-# Use AWS MCP Server
+# use_aws MCP Server
 
-A standalone Model Context Protocol (MCP) server that provides AWS CLI functionality through a standardized interface. This server replicates the functionality of the `use_aws` tool from the Amazon Q Developer CLI.
+amazon-q-cli is great, and it is great because it has use_aws MCP tool to interact with aws API.
+Wouldn't it be greater if this use_aws was portable, and use it across different AI tools, whichever you're currently using?
+
+A standalone Model Context Protocol (MCP) server that provides AWS CLI functionality through a standardized interface. 
+This server replicates the functionality of the `use_aws` tool from the Amazon Q Developer CLI.
+
+## Demo
 
 ## Features
 
@@ -33,7 +39,7 @@ The binary will be available at `target/release/use_aws`.
 ### Running the MCP Server
 
 ```bash
-./target/release/use_aws
+./target/release/use_aws_mcp
 ```
 
 The server communicates via stdin/stdout using JSON-RPC protocol.
@@ -50,8 +56,8 @@ Then configure your MCP client with:
 
 ```json
 {
-  "name": "use_aws",
-  "command": "use_aws",
+  "name": "use_aws_mcp",
+  "command": "use_aws_mcp",
   "env": {},
   "timeout": 30000
 }
