@@ -1,22 +1,21 @@
 # use_aws MCP Server
 
-amazon-q-cli is great, and it is great because it has `use_aws` MCP tool to interact with aws API. 
+🌟 amazon-q-cli is great, and it is great because it has `use_aws` MCP tool to interact with AWS API. 
 
-Wouldn't it be greater if this `use_aws` was portable, and use it across different AI tools, \
-whichever you're currently using? 
+💡 Wouldn't it be greater if this `use_aws` was portable, and use it across different AI tools, whichever you're currently using? 
 
-`use_aws_mcp` is a standalone Model Context Protocol (MCP) server that provides AWS CLI functionality through a standardized interface. \
+⚡ `use_aws_mcp` is a standalone Model Context Protocol (MCP) server that provides AWS CLI functionality through a standardized interface. \
 This server replicates the functionality of the `use_aws` tool from the Amazon Q Developer CLI.
 
-## Demo
+## 🎬 Demo
 
-- Usage with Avante, MCPHub in nvim \
+- **Usage with Avante, MCPHub in nvim** \
 ![Demo: Avante](https://github.com/runjivu/use_aws_mcp/blob/main/images/demo_avante.png?raw=true)
 
-- Usage with Cursor \
+- **Usage with Cursor** \
 ![Demo: Cursor](https://github.com/runjivu/use_aws_mcp/blob/main/images/demo_cursor.png?raw=true)
 
-## Features
+## ✨ Features
 
 - **AWS CLI Integration**: Execute AWS CLI commands with proper parameter handling
 - **Safety Checks**: Automatic detection of read-only vs. write operations
@@ -26,16 +25,16 @@ This server replicates the functionality of the `use_aws` tool from the Amazon Q
 - **MCP Protocol**: Full Model Context Protocol compliance
 - **Human-Readable Descriptions**: Rich command descriptions using terminal formatting
 
-## Installation
+## 📦 Installation
 
-### Prerequisites
+### 📋 Prerequisites
 
-- Rust (1.70 or later), Cargo
+- 🦀 **Rust (1.70 or later), Cargo**
     - for MacOS and linux, install with `curl https://sh.rustup.rs -sSf | sh`
-- AWS CLI installed and configured
-- AWS credentials configured (via AWS CLI, environment variables, or IAM roles)
+- ☁️ **AWS CLI installed and configured**
+- 🔑 **AWS credentials configured** (via AWS CLI, environment variables, or IAM roles)
 
-### Building
+### 🔨 Building
 
 ```bash
 cargo build --release
@@ -43,9 +42,9 @@ cargo build --release
 
 The binary will be available at `target/release/use_aws`.
 
-## Usage
+## 🚀 Usage
 
-### MCP Client Integration
+### 🔗 MCP Client Integration
 
 To use this server with an MCP client, first install it using Cargo:
 
@@ -69,18 +68,17 @@ Then configure your MCP client with:
 }
 ```
 
-#### important caveat for using MCP client
+#### ⚠️ Important Caveat for Using MCP Client
 
 With q cli, mcp clients are shell process, so credentials env like `AWS_DEFAULT_PROFILE` are automatically transfered to mcp server.
 
-However, non shell mcp clients like cursor cannot take advantage of this, so it is best advised to \
-require mcp clients directly to use specific aws profile.
+However, non shell mcp clients like cursor cannot take advantage of this, so it is best advised to require mcp clients directly to use specific aws profile.
 
-**User Flow :**
+**📋 User Flow:**
 
-1. set mcp.json above 
-2. set API key, or login to specific profile using `aws sso login`
-3. ask away mcp client aws related questions! and be sure to require it to use specific profile.
+1. Set mcp.json above 
+2. Set API key, or login to specific profile using `aws sso login`
+3. Ask away mcp client aws related questions! and be sure to require it to use specific profile.
 
 
 ### Running the MCP Server Locally
@@ -115,7 +113,7 @@ Label: List S3 buckets with query
 ✅ This command is read-only (no acceptance required)
 ```
 
-## Tool Specification
+## 🛠️ Tool Specification
 
 The server provides a single tool called `use_aws` with the following schema:
 
@@ -157,7 +155,7 @@ The server provides a single tool called `use_aws` with the following schema:
 }
 ```
 
-## Examples
+## 📚 Examples
 
 ### List S3 Buckets
 
@@ -202,7 +200,7 @@ The server provides a single tool called `use_aws` with the following schema:
 }
 ```
 
-## Safety Features
+## 🛡️ Safety Features
 
 ### Read-Only Operation Detection
 
@@ -223,7 +221,7 @@ Large outputs are automatically truncated to prevent memory issues, with a maxim
 cargo test
 ```
 
-### Building for Development
+### 🔨 Building for Development
 
 ```bash
 cargo build
@@ -253,7 +251,7 @@ The project is structured as follows:
 - `src/main.rs`: Binary entry point
 - `examples/description_demo.rs`: Example demonstrating command descriptions
 
-## Dependencies
+## 📦 Dependencies
 
 If you do not have Cargo (the Rust package manager) installed, you can get it by installing Rust using [rustup](https://rustup.rs/):
 
@@ -288,11 +286,11 @@ test/dev dependencies:
 
 You do not need to install these manually; Cargo will handle them during installation.
 
-## License
+## 📄 License
 
 MIT, Apache-2.0
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -300,7 +298,7 @@ MIT, Apache-2.0
 4. Add tests
 5. Submit a pull request
 
-## Security
+## 🔒 Security
 
 This server executes AWS CLI commands, which may have security implications:
 
@@ -309,7 +307,7 @@ This server executes AWS CLI commands, which may have security implications:
 - Use read-only operations when possible
 - Consider running in a restricted environment
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### Common Issues
 
@@ -325,3 +323,6 @@ Run with debug logging to see detailed information:
 ```bash
 RUST_LOG=use_aws=debug ./target/release/use_aws
 ```
+
+## References
+- [amazon-q-cli](https://github.com/aws/amazon-q-developer-cli)
