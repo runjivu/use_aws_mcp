@@ -8,6 +8,12 @@ This server replicates the functionality of the `use_aws` tool from the Amazon Q
 
 ## Demo
 
+- Usage with Avante, MCPHub in nvim
+![Demo: Avante](https://github.com/runjivu/use_aws_mcp/blob/main/images/demo_avante.png?raw=true)
+
+- Usage with Cursor
+![Demo: Cursor](https://github.com/runjivu/use_aws_mcp/blob/main/images/demo_cursor.png?raw=true)
+
 ## Features
 
 - **AWS CLI Integration**: Execute AWS CLI commands with proper parameter handling
@@ -49,17 +55,22 @@ The server communicates via stdin/stdout using JSON-RPC protocol.
 To use this server with an MCP client, first install it using Cargo:
 
 ```sh
-cargo install use_aws
+cargo install use_aws_mcp
 ```
 
 Then configure your MCP client with:
 
 ```json
 {
-  "name": "use_aws_mcp",
-  "command": "use_aws_mcp",
-  "env": {},
-  "timeout": 30000
+  "mcpServers": {
+    "use_aws_mcp": {
+      "name": "use_aws_mcp",
+      "command": "use_aws_mcp",
+      "timeout": 300,
+      "env": {},
+      "disabled": false
+    }
+  }
 }
 ```
 
